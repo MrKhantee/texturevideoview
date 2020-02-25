@@ -1,6 +1,8 @@
 TextureVideoView for Android
 ============================
 
+![Screenshot](screenshot.png)
+
 A `VideoView` based on the official Android 7.1.1_r13 sources using a `TextureView` instead of a `SurfaceView` by [sprylab technologies GmbH][1]. It will work on Android 4.0+ (API level 15 and above).
 
 The main advantages of this drop-in replacement compared to the original `VideoView` are the following:
