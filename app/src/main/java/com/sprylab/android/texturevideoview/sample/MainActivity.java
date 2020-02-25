@@ -16,87 +16,100 @@
 
 package com.sprylab.android.texturevideoview.sample;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import android.app.*;
+import android.graphics.*;
+import android.media.*;
+import android.os.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import java.io.*;
 
-import com.sprylab.android.sample.texturevideoview.R;
-import com.sprylab.android.widget.TextureVideoView;
-
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.MediaController;
-import android.widget.Toast;
-
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+{
 
     private static final String TAG = MainActivity.class.getName();
-
     private TextureVideoView mVideoView;
-
-    private Button mCaptureFrameButton;
+    ///private Button mCaptureFrameButton;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+	{
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
         mVideoView = (TextureVideoView) findViewById(R.id.video_view);
-        mCaptureFrameButton = (Button) findViewById(R.id.btn_capture_frame);
-        mCaptureFrameButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    saveCurrentFrame();
-                }
-            }
-        );
 
         initVideoView();
+		
+    }
+
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     @Override
-    protected void onDestroy() {
+    public boolean onOptionsItemSelected(MenuItem item) 
+	{
+        switch (item.getItemId())
+		{
+			case R.id.capture:
+				saveCurrentFrame();
+				break;
+			case R.id.exit:
+				finishAndRemoveTask();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+	
+    @Override
+    protected void onDestroy()
+	{
         super.onDestroy();
 
-        if (mVideoView != null) {
+        if (mVideoView != null)
+		{
             mVideoView.stopPlayback();
             mVideoView = null;
         }
     }
 
-    private void initVideoView() {
+    private void initVideoView()
+	{
         mVideoView.setVideoPath(getVideoPath());
         mVideoView.setMediaController(new MediaController(this));
         mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(final MediaPlayer mp) {
-                startVideoPlayback();
-                startVideoAnimation();
-            }
-        });
+				@Override
+				public void onPrepared(final MediaPlayer mp)
+				{
+					startVideoPlayback();
+					///startVideoAnimation();
+				}
+			});
     }
 
-    private void startVideoPlayback() {
+    private void startVideoPlayback()
+	{
         // "forces" anti-aliasing - but increases time for taking frames - so keep it disabled
         // mVideoView.setScaleX(1.00001f);
         mVideoView.start();
     }
 
-    private void startVideoAnimation() {
+    private void startVideoAnimation()
+	{
         mVideoView.animate().rotationBy(360.0f).setDuration(mVideoView.getDuration()).start();
     }
 
-    private String getVideoPath() {
+    private String getVideoPath()
+	{
         return "android.resource://" + getPackageName() + "/" + R.raw.video;
     }
 
-    private void saveCurrentFrame() {
+    private void saveCurrentFrame()
+	{
         final Bitmap currentFrameBitmap = mVideoView.getBitmap();
 
         final File currentFrameFile = new File(getExternalFilesDir("frames"), "frame" + System.currentTimeMillis() + ".jpg");
@@ -107,12 +120,16 @@ public class MainActivity extends Activity {
         Toast.makeText(this, "Frame saved as " + currentFrameFile.getAbsolutePath() + ".", Toast.LENGTH_SHORT).show();
     }
 
-    private void writeBitmapToFile(final Bitmap bitmap, final File file) {
-        try {
+    private void writeBitmapToFile(final Bitmap bitmap, final File file)
+	{
+        try
+		{
             FileOutputStream out = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.close();
-        } catch (final IOException e) {
+        }
+		catch (final IOException e)
+		{
             Log.e(TAG, "Error writing bitmap to file.", e);
         }
     }
